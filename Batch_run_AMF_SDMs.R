@@ -26,7 +26,7 @@ occ_recs <- as.data.frame(readxl::read_excel('DATA/Locations_2018_03_17.xlsx'), 
 
 ### The function below will help to do this easily
 ### 
-taxloop <- function(occ_recs=NULL, env_all=env_all, env_climate=env_climate, env_resources=env_resources,
+taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=env_resources,
                     minN=20, rank="MAARJAM_ID", method='checkerboard2', algorithm='maxent.jar'){
   
   namelist <- sort(unique(occ_recs[,rank]))
@@ -41,15 +41,17 @@ taxloop <- function(occ_recs=NULL, env_all=env_all, env_climate=env_climate, env
     
     if(nrow(fococc) >= minN){
       
-      occ <- fococc[!is.na(rowSums(extract(env_all, fococc[,c('Longitude','Latitude')]))),c('Longitude','Latitude')]
+      fococcrows <- !is.na(rowSums(extract(envall, fococc[,c('Longitude','Latitude')])))
+      occ <- fococc[fococcrows,c('Longitude','Latitude')]
       
       ### The following line selects background as all 'non-focal' occurrences
       ### (a problem here is that there will be few background points for some models [e.g., the Glomerales order model])
-      bg <- bgocc[!is.na(rowSums(extract(env_all, bgocc[,c('Longitude','Latitude')]))),c('Longitude','Latitude')]
+      focbgrows <- !is.na(rowSums(extract(envall, bgocc[,c('Longitude','Latitude')])))
+      bg <- bgocc[focbgrows,c('Longitude','Latitude')]
       
-      mod_all <- ENMevaluate(occ, env_all, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
-      mod_climate <- ENMevaluate(occ, env_climate, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
-      mod_resources <- ENMevaluate(occ, env_resources, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
+      mod_all <- ENMevaluate(occ, envall, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
+      mod_climate <- ENMevaluate(occ, envclim, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
+      mod_resources <- ENMevaluate(occ, envres, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
       
       mods_list[[i]] <- list(all=mod_all, climate=mod_climate, resources=mod_resources)
       names(mods_list)[i] <- foctax
