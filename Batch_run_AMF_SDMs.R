@@ -1,5 +1,5 @@
 library(devtools)
-install_github("bobmuscarella/ENMeval@Version-0.2.2")
+install_github("bobmuscarella/ENMeval@maxnet")
 
 library(ENMeval)
 library(raster)
