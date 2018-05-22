@@ -47,9 +47,9 @@ taxloop <- function(occ_recs=NULL, env_all=env_all, env_climate=env_climate, env
       ### (a problem here is that there will be few background points for some models [e.g., the Glomerales order model])
       bg <- bgocc[!is.na(rowSums(extract(env_all, bgocc[,c('Longitude','Latitude')]))),c('Longitude','Latitude')]
       
-      mod_all <- ENMevaluate(occ, env_all, bg.coords=bg, method=method, parallel=T, algorithm=algorithm, RM=1, fc=c("L"))
-      mod_climate <- ENMevaluate(occ, env_climate, bg.coords=bg, method=method, parallel=T, algorithm=algorithm, RM=1, fc=c("L"))
-      mod_resources <- ENMevaluate(occ, env_resources, bg.coords=bg, method=method, parallel=T, algorithm=algorithm, RM=1, fc=c("L"))
+      mod_all <- ENMevaluate(occ, env_all, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
+      mod_climate <- ENMevaluate(occ, env_climate, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
+      mod_resources <- ENMevaluate(occ, env_resources, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
       
       mods_list[[i]] <- list(all=mod_all, climate=mod_climate, resources=mod_resources)
       names(mods_list)[i] <- foctax
