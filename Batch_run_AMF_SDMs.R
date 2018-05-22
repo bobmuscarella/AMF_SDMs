@@ -1,5 +1,5 @@
 library(devtools)
-install_github("bobmuscarella/ENMeval@maxnet")
+install_github("bobmuscarella/ENMeval@Version-0.2.2")
 
 library(ENMeval)
 library(raster)
@@ -27,7 +27,7 @@ occ_recs <- as.data.frame(readxl::read_excel('DATA/Locations_2018_03_17.xlsx'), 
 ### The function below will help to do this easily
 ### 
 taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=env_resources,
-                    minN=20, rank="MAARJAM_ID", method='checkerboard2', algorithm='maxent.jar'){
+                    minN=20, rank="MAARJAM_ID", method='checkerboard2'){
   
   namelist <- sort(unique(occ_recs[,rank]))
   namelist <- namelist[!is.na(namelist)]
@@ -49,9 +49,9 @@ taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=e
       focbgrows <- !is.na(rowSums(extract(envall, bgocc[,c('Longitude','Latitude')])))
       bg <- bgocc[focbgrows,c('Longitude','Latitude')]
       
-      mod_all <- ENMevaluate(occ, envall, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
-      mod_climate <- ENMevaluate(occ, envclim, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
-      mod_resources <- ENMevaluate(occ, envres, bg.coords=bg, method=method, parallel=T, algorithm=algorithm)
+      mod_all <- ENMevaluate(occ, envall, bg.coords=bg, method=method, parallel=T)#, algorithm=algorithm)
+      mod_climate <- ENMevaluate(occ, envclim, bg.coords=bg, method=method, parallel=T)#, algorithm=algorithm)
+      mod_resources <- ENMevaluate(occ, envres, bg.coords=bg, method=method, parallel=T)#, algorithm=algorithm)
       
       mods_list[[i]] <- list(all=mod_all, climate=mod_climate, resources=mod_resources)
       names(mods_list)[i] <- foctax
