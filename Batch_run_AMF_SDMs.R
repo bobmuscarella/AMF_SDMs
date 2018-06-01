@@ -25,10 +25,7 @@ occ_recs <- as.data.frame(readxl::read_excel('DATA/Locations_2018_03_17.xlsx'), 
 #### PART 2: Build models for units of various taxonomic ranks
 ############################################
 
-### The function below will help to do this easily
-### 
-### The function below will help to do this easily
-### 
+### The function below will help to do this easily ### 
 taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=env_resources,
                     minN=20, rank="MAARJAM_ID", method='checkerboard2', ncores=12,
                     background="target"){
@@ -52,8 +49,6 @@ taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=e
       fococcrows <- !is.na(rowSums(extract(envall, fococc[,c('Longitude','Latitude')])))
       occ <- fococc[fococcrows,c('Longitude','Latitude')]
       
-      ### The following line selects background as all 'non-focal' occurrences
-      ### (a problem here is that there will be few background points for some models [e.g., the Glomerales order model])
       if(background == "target"){
         focbgrows <- !is.na(rowSums(extract(envall, bgocc[,c('Longitude','Latitude')])))
         bg <- bgocc[focbgrows,c('Longitude','Latitude')]
