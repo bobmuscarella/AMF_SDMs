@@ -27,8 +27,11 @@ occ_recs <- as.data.frame(readxl::read_excel('DATA/Locations_2018_03_17.xlsx'), 
 
 ### The function below will help to do this easily
 ### 
+### The function below will help to do this easily
+### 
 taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=env_resources,
-                    minN=20, rank="MAARJAM_ID", method='checkerboard2', ncores=12){
+                    minN=20, rank="MAARJAM_ID", method='checkerboard2', ncores=12,
+                    background="target"){
   
   namelist <- sort(unique(occ_recs[,rank]))
   namelist <- namelist[!is.na(namelist)]
@@ -38,9 +41,11 @@ taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=e
     
     foctax <- namelist[i]
     warning(paste('now working on:', foctax, ':', i, 'of', length(namelist)), immediate. = T)
-
+    
     fococc <- occ_recs[occ_recs[,rank] %in% foctax,]
-    bgocc <- occ_recs[!occ_recs[,rank] %in% foctax,]
+    if(background == "target"){
+      bgocc <- occ_recs[!occ_recs[,rank] %in% foctax,]
+    }
     
     if(nrow(fococc) >= minN){
       
@@ -49,12 +54,19 @@ taxloop <- function(occ_recs=NULL, envall=env_all, envclim=env_climate, envres=e
       
       ### The following line selects background as all 'non-focal' occurrences
       ### (a problem here is that there will be few background points for some models [e.g., the Glomerales order model])
-      focbgrows <- !is.na(rowSums(extract(envall, bgocc[,c('Longitude','Latitude')])))
-      bg <- bgocc[focbgrows,c('Longitude','Latitude')]
+      if(background == "target"){
+        focbgrows <- !is.na(rowSums(extract(envall, bgocc[,c('Longitude','Latitude')])))
+        bg <- bgocc[focbgrows,c('Longitude','Latitude')]
+        mod_all <- ENMevaluate(occ, envall, bg.coords=bg, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
+        mod_climate <- ENMevaluate(occ, envclim, bg.coords=bg, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
+        mod_resources <- ENMevaluate(occ, envres, bg.coords=bg, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
+      }
       
-      mod_all <- ENMevaluate(occ, envall, bg.coords=bg, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
-      mod_climate <- ENMevaluate(occ, envclim, bg.coords=bg, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
-      mod_resources <- ENMevaluate(occ, envres, bg.coords=bg, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
+      if(background != "target"){
+        mod_all <- ENMevaluate(occ, envall, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
+        mod_climate <- ENMevaluate(occ, envclim, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
+        mod_resources <- ENMevaluate(occ, envres, method=method, parallel=T, numCores=ncores)#, algorithm=algorithm)
+      }
       
       mods_list[[i]] <- list(all=mod_all, climate=mod_climate, resources=mod_resources)
       names(mods_list)[i] <- foctax
