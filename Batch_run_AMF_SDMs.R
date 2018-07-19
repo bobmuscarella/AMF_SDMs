@@ -40,7 +40,8 @@ taxloop <- function(occ_recs=NULL, eall=env_all, eclim=env_climate, eres=env_res
     print(paste('now working on:', foctax, ':', i, 'of', length(namelist)), immediate. = T)
     
     fococc <- occ_recs[occ_recs[,rank] %in% foctax,]
-    
+    bgocc <- occ_recs[!occ_recs[,rank] %in% foctax,]
+
     fococcrows <- !is.na(rowSums(extract(eall, fococc[,c('Longitude','Latitude')])))
     occ <- fococc[fococcrows, c('Longitude','Latitude')]
     
@@ -91,7 +92,8 @@ for(i in seq_along(namelist)){
   print(paste('now working on:', foctax, ':', i, 'of', length(namelist)), immediate. = T)
   
   fococc <- occ_recs[occ_recs[,rank] %in% foctax,]
-  
+  bgocc <- occ_recs[!occ_recs[,rank] %in% foctax,]
+
   fococcrows <- !is.na(rowSums(extract(eall, fococc[,c('Longitude','Latitude')])))
   occ <- fococc[fococcrows, c('Longitude','Latitude')]
   
